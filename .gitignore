@@ -21,9 +21,10 @@ Thumbs.db
 *.njsproj
 *.sln
 
-# Arquivos de Agentes AI (Gemini/Claude)
+# Arquivos de Agentes AI (Gemini/Claude/Agent)
 .gemini/
 .claude/
+.agent/
 
 # Builds e Distribuição
 dist/
