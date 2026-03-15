@@ -87,9 +87,9 @@ body {
 
 /* Sidebar */
 .sidebar {
-    width: 300px;
+    width: clamp(220px, 25vw, 300px); /* Fluid width between 220px and 300px */
     background: var(--bg-app);
-    padding: 1.25rem 1rem; /* Slightly reduced horizontal padding */
+    padding: 1.25rem 0.75rem; /* Proportional padding */
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -127,8 +127,8 @@ body {
 /* Colors */
 .palette-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); /* Auto columns! */
+    gap: 0.5rem;
     justify-items: center;
     width: 100%;
 }
@@ -171,8 +171,8 @@ body {
 /* Tools */
 .tools-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 columns */
-    gap: 0.5rem; /* Reduced gap */
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Fluid adjustment */
+    gap: 0.5rem;
     width: 100%;
 }
 
@@ -467,7 +467,18 @@ input[type="range"] {
     height: 32px;
 }
 
-/* Mobile Responsive */
+/* Tablet/Landscape Adjustments (Intermediate breakpoint) */
+@media (max-width: 1100px) {
+    .sidebar {
+        width: 240px;
+        padding: 1rem 0.5rem;
+    }
+    .main-header {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Mobile & Portrait Responsive */
 @media (max-width: 768px) {
     .content-layout {
         flex-direction: column;
@@ -482,7 +493,7 @@ input[type="range"] {
         order: 2; 
         padding: 1rem;
         gap: 1rem;
-        max-height: 30vh; 
+        max-height: 35vh; 
     }
 
     /* Stack color sidebar below tools on mobile */
@@ -498,6 +509,6 @@ input[type="range"] {
     }
     
     .card {
-        padding: 1rem;
+        padding: 0.75rem;
     }
 }
