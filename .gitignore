@@ -30,6 +30,11 @@ Thumbs.db
 dist/
 build/
 out/
+www/
+
+# Capacitor
+android/
+ios/
 
 # Variáveis de ambiente
 .env
