@@ -13,13 +13,10 @@
 </head>
 <body>
     <div class="app-wrapper">
-        <!-- Header Mobile Only (Desktop header is in sidebar or top bar) -->
+        <!-- Header -->
         <header class="main-header">
             <div class="logo-area">
                 <div class="logo-icon">
-                    <!-- INSERIR LOGOTIPO AQUI -->
-                    <!-- Troque o src="sua-logo.png" pelo caminho da sua imagem e remova o ícone lucide -->
-                    <!-- <img src="sua-logo.png" alt="Logo Missangas Jane" style="width: 24px; height: 24px;"> -->
                     <i data-lucide="grid-3x3"></i>
                 </div>
                 <div>
@@ -34,17 +31,24 @@
                 <button id="btn-redo" class="icon-btn" title="Refazer">
                     <i data-lucide="redo-2"></i>
                 </button>
+                <div class="header-divider"></div>
+                <button id="btn-print" class="icon-btn" title="Imprimir">
+                    <i data-lucide="printer"></i>
+                </button>
+                <button id="btn-pdf" class="icon-btn" title="Salvar Imagem">
+                    <i data-lucide="file-down"></i>
+                </button>
+                <div class="header-divider"></div>
                 <button id="btn-clear" class="icon-btn danger" title="Limpar Tudo">
                     <i data-lucide="trash-2"></i>
                 </button>
-                <button id="btn-settings" class="icon-btn" title="Configurações">
-                    <i data-lucide="settings"></i>
-                </button>
             </div>
         </header>
+
         <div class="content-layout">
             <!-- Left Sidebar: Tools -->
             <aside class="sidebar tools-sidebar">
+                
                 <!-- Tools Card -->
                 <div class="card">
                     <h2>Ferramentas</h2>
@@ -65,17 +69,18 @@
                             <i data-lucide="minus"></i>
                             <span>Reta</span>
                         </button>
-                        <button id="btn-import-image" class="tool-btn" title="Importar Imagem" style="grid-column: span 2; background-color: var(--primary); color: white; border-color: var(--primary);">
+                        <button id="btn-import-image" class="tool-btn import-btn" title="Importar Imagem" style="grid-column: span 2;">
                             <i data-lucide="image"></i>
-                            <span style="color: white; font-weight: 600;">Importar Imagem</span>
+                            <span>Importar Imagem</span>
                         </button>
                         <input type="file" id="input-image" accept="image/*" class="hidden">
                     </div>
+                </div>
 
-                    <div class="divider" style="margin: 1rem 0;"></div>
-                    
-                    <h3 class="collapsible-title" id="toggle-shapes">Formas <i data-lucide="chevron-down"></i></h3>
-                    <div class="tools-grid shapes-tools hidden" id="shapes-panel">
+                <!-- Shapes Card (Always Visible) -->
+                <div class="card">
+                    <h2>Formas</h2>
+                    <div class="tools-grid shapes-tools">
                         <button id="tool-square" class="tool-btn" title="Quadrado">
                             <i data-lucide="square"></i>
                             <span>Quadrado</span>
@@ -85,69 +90,24 @@
                             <span>Círculo</span>
                         </button>
                     </div>
+                </div>
 
-                    <div class="divider" style="margin: 1rem 0;"></div>
-                    
-                    <h3 class="collapsible-title" id="toggle-transform">Transformações <i data-lucide="chevron-down"></i></h3>
-                    <div class="tools-grid transform-tools hidden" id="transform-panel">
+                <!-- Transforms Card (Always Visible) -->
+                <div class="card">
+                    <h2>Transformações</h2>
+                    <div class="tools-grid transform-tools">
                         <button id="action-mirror" class="tool-btn" title="Espelhar Horizontalmente">
                             <i data-lucide="flip-horizontal"></i>
                             <span>Espelhar</span>
                         </button>
                         <button id="action-rotate-left" class="tool-btn" title="Girar 90° Anti-horário">
                             <i data-lucide="rotate-ccw"></i>
-                            <span>Girar Esq.</span>
+                            <span>Girar ←</span>
                         </button>
                         <button id="action-rotate-right" class="tool-btn" title="Girar 90° Horário">
                             <i data-lucide="rotate-cw"></i>
-                            <span>Girar Dir.</span>
+                            <span>Girar →</span>
                         </button>
-                    </div>
-                </div>
-
-                <!-- Settings Modal (Initially Hidden) -->
-                <div class="modal-overlay hidden" id="settings-modal">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h2>Configurações do Tapete</h2>
-                            <button id="btn-close-settings" class="icon-btn"><i data-lucide="x"></i></button>
-                        </div>
-                        
-                        <div class="card no-shadow">
-                            <div class="control-row">
-                                <label>Linhas</label>
-                                <div class="stepper">
-                                    <button class="step-btn" data-action="dec-rows"><i data-lucide="minus"></i></button>
-                                    <input type="number" id="input-rows" value="30" min="5" max="50" readonly>
-                                    <button class="step-btn" data-action="inc-rows"><i data-lucide="plus"></i></button>
-                                </div>
-                            </div>
-                            <div class="control-row">
-                                <label>Colunas</label>
-                                <div class="stepper">
-                                    <button class="step-btn" data-action="dec-cols"><i data-lucide="minus"></i></button>
-                                    <input type="number" id="input-cols" value="20" min="5" max="50" readonly>
-                                    <button class="step-btn" data-action="inc-cols"><i data-lucide="plus"></i></button>
-                                </div>
-                            </div>
-                            <div class="control-row">
-                                <label>Zoom</label>
-                                <input type="range" id="input-zoom" min="10" max="40" value="20">
-                            </div>
-                        </div>
-
-                        <!-- Export Card inside settings -->
-                        <div class="card no-shadow mt-4">
-                            <h2>Exportar e Imprimir</h2>
-                            <div class="export-row">
-                                <button id="btn-print" class="btn btn-primary">
-                                    <i data-lucide="printer"></i> Imprimir
-                                </button>
-                                <button id="btn-pdf" class="btn btn-secondary">
-                                    <i data-lucide="file-down"></i> Salvar Imagem
-                                </button>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -168,8 +128,21 @@
             </aside>
 
             <!-- Main Canvas Area -->
-            <main class="canvas-area">
+            <main class="canvas-area" id="canvas-area">
+                <!-- Zoom bar above canvas -->
+                <div class="zoom-bar">
+                    <button class="zoom-btn" id="btn-zoom-out" title="Diminuir">
+                        <i data-lucide="zoom-out"></i>
+                    </button>
+                    <input type="range" id="input-zoom" min="10" max="50" value="24" title="Zoom">
+                    <button class="zoom-btn" id="btn-zoom-in" title="Aumentar">
+                        <i data-lucide="zoom-in"></i>
+                    </button>
+                </div>
                 <div class="canvas-wrapper">
+                    <div class="thread-guide" id="thread-guide">
+                        <!-- Row numbers injected by JS -->
+                    </div>
                     <div id="grid-canvas" class="grid-canvas">
                         <!-- Grid cells injected here -->
                     </div>
@@ -178,7 +151,6 @@
 
             <!-- Right Sidebar: Colors -->
             <aside class="sidebar colors-sidebar">
-                <!-- Colors Card -->
                 <div class="card">
                     <h2>Cores</h2>
                     <div class="palette-grid" id="palette-grid">
