@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Missangas Jane</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="js/lib/lucide.min.js"></script>
     <script src="js/lib/jspdf.min.js"></script>
     <script src="js/lib/html2canvas.min.js"></script>
 </head>
+
 <body>
     <div class="app-wrapper">
 
@@ -29,7 +34,8 @@
                     <i data-lucide="redo-2"></i>
                 </button>
                 <div class="header-divider"></div>
-                <button id="btn-save-png" class="icon-btn icon-btn--accent" title="Salvar imagem" aria-label="Salvar imagem">
+                <button id="btn-save-png" class="icon-btn icon-btn--accent" title="Salvar imagem"
+                    aria-label="Salvar imagem">
                     <i data-lucide="download"></i>
                 </button>
                 <button id="btn-pdf" class="icon-btn" title="Exportar PDF" aria-label="Exportar PDF">
@@ -48,15 +54,19 @@
                 <!-- Controles: tom de pele + zoom (sempre visíveis) -->
                 <div class="canvas-controls">
                     <div class="skin-selector" aria-label="Tom de pele do fundo">
-                        <button class="skin-btn active" data-skin="light"  title="Tom claro"  aria-label="Tom de pele claro"></button>
-                        <button class="skin-btn"        data-skin="medium" title="Tom médio"  aria-label="Tom de pele médio"></button>
-                        <button class="skin-btn"        data-skin="dark"   title="Tom escuro" aria-label="Tom de pele escuro"></button>
+                        <button class="skin-btn active" data-skin="light" title="Tom claro"
+                            aria-label="Tom de pele claro"></button>
+                        <button class="skin-btn" data-skin="medium" title="Tom médio"
+                            aria-label="Tom de pele médio"></button>
+                        <button class="skin-btn" data-skin="dark" title="Tom escuro"
+                            aria-label="Tom de pele escuro"></button>
                     </div>
                     <div class="zoom-bar">
                         <button class="zoom-btn" id="btn-zoom-out" aria-label="Missangas menores">
                             <i data-lucide="zoom-out"></i>
                         </button>
-                        <input type="range" id="input-zoom" min="8" max="60" value="28" aria-label="Tamanho das missangas">
+                        <input type="range" id="input-zoom" min="8" max="60" value="28"
+                            aria-label="Tamanho das missangas">
                         <button class="zoom-btn" id="btn-zoom-in" aria-label="Missangas maiores">
                             <i data-lucide="zoom-in"></i>
                         </button>
@@ -92,12 +102,14 @@
                 <i data-lucide="paint-bucket"></i>
                 <span>Balde</span>
             </button>
-            <div id="current-color-swatch" class="current-color-swatch" role="img" aria-label="Cor selecionada atualmente"></div>
+            <div id="current-color-swatch" class="current-color-swatch" role="img"
+                aria-label="Cor selecionada atualmente"></div>
             <button id="btn-toggle-mais" class="tool-btn" aria-label="Mais ferramentas" aria-expanded="false">
                 <i data-lucide="chevron-up" id="mais-chevron"></i>
                 <span>Mais</span>
             </button>
-            <button id="btn-clear" class="tool-btn tool-btn--danger" aria-label="Apagar todo o desenho e começar do zero">
+            <button id="btn-clear" class="tool-btn tool-btn--danger"
+                aria-label="Apagar todo o desenho e começar do zero">
                 <i data-lucide="trash-2"></i>
                 <span>Apagar</span>
             </button>
@@ -111,19 +123,19 @@
         <div class="bottom-sheet-handle"></div>
         <p class="bottom-sheet-title">Mais Ferramentas</p>
         <div class="bottom-sheet-tools">
-            <button id="tool-line"           class="tool-btn tool-btn--sm" aria-label="Reta">
+            <button id="tool-line" class="tool-btn tool-btn--sm" aria-label="Reta">
                 <i data-lucide="minus"></i><span>Reta</span>
             </button>
-            <button id="tool-square"         class="tool-btn tool-btn--sm" aria-label="Quadrado">
+            <button id="tool-square" class="tool-btn tool-btn--sm" aria-label="Quadrado">
                 <i data-lucide="square"></i><span>Quadrado</span>
             </button>
-            <button id="tool-circle"         class="tool-btn tool-btn--sm" aria-label="Círculo">
+            <button id="tool-circle" class="tool-btn tool-btn--sm" aria-label="Círculo">
                 <i data-lucide="circle"></i><span>Círculo</span>
             </button>
-            <button id="action-mirror"       class="tool-btn tool-btn--sm" aria-label="Espelhar">
+            <button id="action-mirror" class="tool-btn tool-btn--sm" aria-label="Espelhar">
                 <i data-lucide="flip-horizontal"></i><span>Espelhar</span>
             </button>
-            <button id="action-rotate-left"  class="tool-btn tool-btn--sm" aria-label="Girar à esquerda">
+            <button id="action-rotate-left" class="tool-btn tool-btn--sm" aria-label="Girar à esquerda">
                 <i data-lucide="rotate-ccw"></i><span>Girar ←</span>
             </button>
             <button id="action-rotate-right" class="tool-btn tool-btn--sm" aria-label="Girar à direita">
@@ -133,7 +145,8 @@
     </div>
 
     <!-- ══ MODAL: Confirmar limpeza ═══════════════════════════ -->
-    <div class="modal-overlay hidden" id="clear-modal" role="dialog" aria-modal="true" aria-labelledby="clear-modal-title">
+    <div class="modal-overlay hidden" id="clear-modal" role="dialog" aria-modal="true"
+        aria-labelledby="clear-modal-title">
         <div class="modal-box">
             <div class="modal-icon modal-icon--danger">
                 <i data-lucide="alert-triangle"></i>
@@ -141,7 +154,7 @@
             <h2 id="clear-modal-title">Apagar tudo?</h2>
             <p class="modal-desc">O desenho vai ser apagado e você começa do zero.</p>
             <div class="modal-actions">
-                <button id="btn-cancel-clear"  class="btn btn--cancel">Não, continuar</button>
+                <button id="btn-cancel-clear" class="btn btn--cancel">Não, continuar</button>
                 <button id="btn-confirm-clear" class="btn btn--danger">Sim, apagar</button>
             </div>
         </div>
@@ -157,7 +170,7 @@
         <div class="modal-box">
             <img src="assets/coffee.png" alt="Apoie o projeto Missangas Jane" style="width:100%;border-radius:14px;">
             <h2>Apoie o Projeto!</h2>
-            <p class="modal-desc">Feito com amor para a Jane. Se gostou, deixe um cafezinho!</p>
+            <p class="modal-desc">Feito com amor e carinho para a Jane. Se você gostou, deixe um cafezinho!</p>
             <div class="pix-card">
                 <code>b5ce2235-461f-4581-afdb-3b257fc56d0c</code>
                 <button id="btn-copy-pix" class="btn btn--pix">Copiar Chave Pix</button>
@@ -169,4 +182,5 @@
     <script src="js/app.js"></script>
     <script>lucide.createIcons();</script>
 </body>
+
 </html>
