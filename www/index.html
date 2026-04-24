@@ -2,8 +2,11 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Missangas Jane</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="js/lib/lucide.min.js"></script>
     <script src="js/lib/jspdf.min.js"></script>
@@ -11,183 +14,159 @@
 </head>
 <body>
     <div class="app-wrapper">
-        <!-- Header -->
+
+        <!-- ══ HEADER ══════════════════════════════════════════ -->
         <header class="main-header">
             <div class="logo-area">
-                <div class="logo-icon">
-                    <img src="assets/icon.png" alt="Missangas Jane" style="width: 28px; height: 28px; border-radius: 6px; object-fit: cover;">
-                </div>
-                <div>
-                    <h1>Missangas Jane ✨</h1>
-                </div>
+                <img src="assets/icon.png" alt="Missangas Jane" class="logo-img">
+                <span class="logo-title">Missangas Jane</span>
             </div>
-            
             <div class="header-actions">
-                <button id="btn-undo" class="icon-btn" title="Desfazer">
+                <button id="btn-undo" class="icon-btn" title="Desfazer" aria-label="Desfazer">
                     <i data-lucide="undo-2"></i>
                 </button>
-                <button id="btn-redo" class="icon-btn" title="Refazer">
+                <button id="btn-redo" class="icon-btn" title="Refazer" aria-label="Refazer">
                     <i data-lucide="redo-2"></i>
                 </button>
                 <div class="header-divider"></div>
-                <button id="btn-print" class="icon-btn" title="Imprimir">
-                    <i data-lucide="printer"></i>
+                <button id="btn-save-png" class="icon-btn icon-btn--accent" title="Salvar imagem" aria-label="Salvar imagem">
+                    <i data-lucide="download"></i>
                 </button>
-                <button id="btn-pdf" class="icon-btn" title="Salvar Imagem">
+                <button id="btn-pdf" class="icon-btn" title="Exportar PDF" aria-label="Exportar PDF">
                     <i data-lucide="file-down"></i>
                 </button>
-                <div class="header-divider"></div>
-                <button id="btn-clear" class="icon-btn danger" title="Limpar Tudo">
-                    <i data-lucide="trash-2"></i>
+                <button id="btn-print" class="icon-btn" title="Imprimir" aria-label="Imprimir">
+                    <i data-lucide="printer"></i>
                 </button>
             </div>
         </header>
 
         <div class="content-layout">
-            <!-- Left Sidebar: Tools -->
-            <aside class="sidebar tools-sidebar">
-                
-                <!-- Tools Card -->
-                <div class="card">
-                    <h2>Ferramentas</h2>
-                    <div class="tools-grid main-tools">
-                        <button id="tool-pencil" class="tool-btn active" title="Lápis">
-                            <i data-lucide="pencil"></i>
-                            <span>Lápis</span>
-                        </button>
-                        <button id="tool-eraser" class="tool-btn" title="Borracha">
-                            <i data-lucide="eraser"></i>
-                            <span>Borracha</span>
-                        </button>
-                        <button id="tool-bucket" class="tool-btn" title="Balde de Tinta">
-                            <i data-lucide="paint-bucket"></i>
-                            <span>Balde</span>
-                        </button>
-                        <button id="tool-line" class="tool-btn" title="Linha Reta">
-                            <i data-lucide="minus"></i>
-                            <span>Reta</span>
-                        </button>
-                        <button id="btn-import-image" class="tool-btn import-btn" title="Importar Imagem" style="grid-column: span 2;">
-                            <i data-lucide="image"></i>
-                            <span>Importar Imagem</span>
-                        </button>
-                        <input type="file" id="input-image" accept="image/*" class="hidden">
-                    </div>
-                </div>
 
-                <!-- Shapes Card (Always Visible) -->
-                <div class="card">
-                    <h2>Formas</h2>
-                    <div class="tools-grid shapes-tools">
-                        <button id="tool-square" class="tool-btn" title="Quadrado">
-                            <i data-lucide="square"></i>
-                            <span>Quadrado</span>
-                        </button>
-                        <button id="tool-circle" class="tool-btn" title="Círculo">
-                            <i data-lucide="circle"></i>
-                            <span>Círculo</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Transforms Card (Always Visible) -->
-                <div class="card">
-                    <h2>Transformações</h2>
-                    <div class="tools-grid transform-tools">
-                        <button id="action-mirror" class="tool-btn" title="Espelhar Horizontalmente">
-                            <i data-lucide="flip-horizontal"></i>
-                            <span>Espelhar</span>
-                        </button>
-                        <button id="action-rotate-left" class="tool-btn" title="Girar 90° Anti-horário">
-                            <i data-lucide="rotate-ccw"></i>
-                            <span>Girar ←</span>
-                        </button>
-                        <button id="action-rotate-right" class="tool-btn" title="Girar 90° Horário">
-                            <i data-lucide="rotate-cw"></i>
-                            <span>Girar →</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Custom Clear Confirmation Modal -->
-                <div class="modal-overlay hidden" id="clear-modal">
-                    <div class="modal-content text-center">
-                        <div class="danger-icon-wrapper">
-                            <i data-lucide="alert-triangle" class="text-danger"></i>
-                        </div>
-                        <h2>Apagar tudo?</h2>
-                        <p class="text-muted">Isso vai apagar todo o seu desenho atual. Deseja continuar?</p>
-                        <div class="actions-row mt-4">
-                            <button id="btn-cancel-clear" class="btn btn-secondary">Não, voltar</button>
-                            <button id="btn-confirm-clear" class="btn btn-danger">Sim, apagar</button>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Main Canvas Area -->
+            <!-- ══ CANVAS ══════════════════════════════════════ -->
             <main class="canvas-area" id="canvas-area">
-                <!-- Zoom bar above canvas -->
-                <div class="zoom-bar">
-                    <button class="zoom-btn" id="btn-zoom-out" title="Diminuir">
-                        <i data-lucide="zoom-out"></i>
-                    </button>
-                    <input type="range" id="input-zoom" min="10" max="50" value="24" title="Zoom">
-                    <button class="zoom-btn" id="btn-zoom-in" title="Aumentar">
-                        <i data-lucide="zoom-in"></i>
-                    </button>
+                <!-- Controles: tom de pele + zoom (sempre visíveis) -->
+                <div class="canvas-controls">
+                    <div class="skin-selector" aria-label="Tom de pele do fundo">
+                        <button class="skin-btn active" data-skin="light"  title="Tom claro"  aria-label="Tom de pele claro"></button>
+                        <button class="skin-btn"        data-skin="medium" title="Tom médio"  aria-label="Tom de pele médio"></button>
+                        <button class="skin-btn"        data-skin="dark"   title="Tom escuro" aria-label="Tom de pele escuro"></button>
+                    </div>
+                    <div class="zoom-bar">
+                        <button class="zoom-btn" id="btn-zoom-out" aria-label="Missangas menores">
+                            <i data-lucide="zoom-out"></i>
+                        </button>
+                        <input type="range" id="input-zoom" min="8" max="60" value="28" aria-label="Tamanho das missangas">
+                        <button class="zoom-btn" id="btn-zoom-in" aria-label="Missangas maiores">
+                            <i data-lucide="zoom-in"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="canvas-wrapper">
-                    <div class="thread-guide" id="thread-guide">
-                        <!-- Row numbers injected by JS -->
-                    </div>
-                    <div id="grid-canvas" class="grid-canvas">
-                        <!-- Grid cells injected here -->
-                    </div>
+                    <div class="thread-guide" id="thread-guide"></div>
+                    <div id="grid-canvas" class="grid-canvas"></div>
                 </div>
             </main>
 
-            <!-- Right Sidebar: Colors -->
+            <!-- ══ SIDEBAR: CORES ══════════════════════════════ -->
             <aside class="sidebar colors-sidebar">
-                <div class="card">
-                    <h2>Cores</h2>
-                    <div class="palette-grid" id="palette-grid">
-                        <!-- Colors injected by JS -->
-                    </div>
+                <div class="card colors-card">
+                    <h2 class="card-label">Cores</h2>
+                    <div class="palette-grid" id="palette-grid"></div>
                 </div>
             </aside>
+
+        </div><!-- /content-layout -->
+
+        <!-- ══ BARRA DE FERRAMENTAS (rodapé) ══════════════════ -->
+        <div class="bottom-toolbar">
+            <button id="tool-pencil" class="tool-btn active" aria-label="Lápis — desenhar">
+                <i data-lucide="pencil"></i>
+                <span>Lápis</span>
+            </button>
+            <button id="tool-eraser" class="tool-btn" aria-label="Borracha — apagar">
+                <i data-lucide="eraser"></i>
+                <span>Borracha</span>
+            </button>
+            <button id="tool-bucket" class="tool-btn" aria-label="Balde — preencher cor">
+                <i data-lucide="paint-bucket"></i>
+                <span>Balde</span>
+            </button>
+            <div id="current-color-swatch" class="current-color-swatch" role="img" aria-label="Cor selecionada atualmente"></div>
+            <button id="btn-toggle-mais" class="tool-btn" aria-label="Mais ferramentas" aria-expanded="false">
+                <i data-lucide="chevron-up" id="mais-chevron"></i>
+                <span>Mais</span>
+            </button>
+            <button id="btn-clear" class="tool-btn tool-btn--danger" aria-label="Apagar todo o desenho e começar do zero">
+                <i data-lucide="trash-2"></i>
+                <span>Apagar</span>
+            </button>
+        </div>
+
+    </div><!-- /app-wrapper -->
+
+    <!-- ══ BOTTOM SHEET: Mais Ferramentas ══════════════════════ -->
+    <div class="bottom-sheet-overlay hidden" id="mais-overlay"></div>
+    <div class="bottom-sheet hidden" id="mais-content" role="dialog" aria-modal="true" aria-label="Mais ferramentas">
+        <div class="bottom-sheet-handle"></div>
+        <p class="bottom-sheet-title">Mais Ferramentas</p>
+        <div class="bottom-sheet-tools">
+            <button id="tool-line"           class="tool-btn tool-btn--sm" aria-label="Reta">
+                <i data-lucide="minus"></i><span>Reta</span>
+            </button>
+            <button id="tool-square"         class="tool-btn tool-btn--sm" aria-label="Quadrado">
+                <i data-lucide="square"></i><span>Quadrado</span>
+            </button>
+            <button id="tool-circle"         class="tool-btn tool-btn--sm" aria-label="Círculo">
+                <i data-lucide="circle"></i><span>Círculo</span>
+            </button>
+            <button id="action-mirror"       class="tool-btn tool-btn--sm" aria-label="Espelhar">
+                <i data-lucide="flip-horizontal"></i><span>Espelhar</span>
+            </button>
+            <button id="action-rotate-left"  class="tool-btn tool-btn--sm" aria-label="Girar à esquerda">
+                <i data-lucide="rotate-ccw"></i><span>Girar ←</span>
+            </button>
+            <button id="action-rotate-right" class="tool-btn tool-btn--sm" aria-label="Girar à direita">
+                <i data-lucide="rotate-cw"></i><span>Girar →</span>
+            </button>
         </div>
     </div>
 
-    <!-- Floating Donation Button -->
-    <button id="btn-donation" class="floating-btn" title="Contribuir com o projeto">
-        <i data-lucide="qr-code"></i>
+    <!-- ══ MODAL: Confirmar limpeza ═══════════════════════════ -->
+    <div class="modal-overlay hidden" id="clear-modal" role="dialog" aria-modal="true" aria-labelledby="clear-modal-title">
+        <div class="modal-box">
+            <div class="modal-icon modal-icon--danger">
+                <i data-lucide="alert-triangle"></i>
+            </div>
+            <h2 id="clear-modal-title">Apagar tudo?</h2>
+            <p class="modal-desc">O desenho vai ser apagado e você começa do zero.</p>
+            <div class="modal-actions">
+                <button id="btn-cancel-clear"  class="btn btn--cancel">Não, continuar</button>
+                <button id="btn-confirm-clear" class="btn btn--danger">Sim, apagar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ BOTÃO FLUTUANTE PIX ════════════════════════════════ -->
+    <button id="btn-donation" class="floating-btn" aria-label="Apoiar o projeto via Pix" title="Apoiar com Pix">
+        <i data-lucide="heart"></i>
     </button>
 
-    <!-- Donation Modal -->
-    <div class="modal-overlay hidden" id="donation-modal">
-        <div class="modal-content text-center">
-            <div class="donation-image-wrapper">
-                <img src="assets/coffee.png" alt="Pague um café" class="donation-img">
-            </div>
-            <h2>Apoie o Projeto! ☕</h2>
-            <p class="text-muted">Se achou o app útil, considere nos pagar um café para contribuir com o projeto.</p>
+    <!-- ══ MODAL: Doação ══════════════════════════════════════ -->
+    <div class="modal-overlay hidden" id="donation-modal" role="dialog" aria-modal="true">
+        <div class="modal-box">
+            <img src="assets/coffee.png" alt="Apoie o projeto Missangas Jane" style="width:100%;border-radius:14px;">
+            <h2>Apoie o Projeto!</h2>
+            <p class="modal-desc">Feito com amor para a Jane. Se gostou, deixe um cafezinho!</p>
             <div class="pix-card">
-                <code id="pix-key-display">b5ce2235-461f-4581-afdb-3b257fc56d0c</code>
-                <button id="btn-copy-pix" class="btn btn-secondary btn-sm">
-                    <i data-lucide="copy"></i> Copiar Chave Pix
-                </button>
+                <code>b5ce2235-461f-4581-afdb-3b257fc56d0c</code>
+                <button id="btn-copy-pix" class="btn btn--pix">Copiar Chave Pix</button>
             </div>
-            <div class="actions-row mt-4">
-                <button id="btn-close-donation" class="btn btn-secondary">Fechar</button>
-            </div>
+            <button id="btn-close-donation" class="btn btn--cancel" style="margin-top:.5rem;">Fechar</button>
         </div>
     </div>
 
     <script src="js/app.js"></script>
-    <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
-    </script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>
