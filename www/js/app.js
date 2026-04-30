@@ -1,7 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const FIXED_ROWS       = 12;
+    const FIXED_ROWS = 12;
     const DEFAULT_CELL_SIZE = 28;
-    const STORAGE_KEY       = 'missangas-v3';
+    const STORAGE_KEY = 'missangas-v3';
+
+    function detectPlatform() {
+        const isCapacitor = !!window.Capacitor;
+        const userAgent = navigator.userAgent || '';
+        const isAndroid = /Android/i.test(userAgent);
+        const isAndroidApp = isCapacitor && isAndroid;
+        return {
+            isCapacitor,
+            isAndroid,
+            isAndroidApp,
+            kind: isAndroidApp ? 'android' : 'web',
+        };
+    }
+
+    const platform = detectPlatform();
+    document.body.classList.add(`is-${platform.kind}`);
+    document.body.dataset.platform = platform.kind;
 
     const PRESET_COLORS = [
         '#ffffff', '#f3f4f6', '#9ca3af', '#4b5563', '#111827',
@@ -12,65 +29,68 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const SKIN_TONES = {
-        light:  '#FDDBB4',
+        light: '#FDDBB4',
         medium: '#C8895A',
-        dark:   '#7D4E2D',
+        dark: '#7D4E2D',
     };
 
     const state = {
-        rows:          FIXED_ROWS,
-        cols:          20,
-        cellSize:      DEFAULT_CELL_SIZE,
-        colors:        [],
+        rows: FIXED_ROWS,
+        cols: 20,
+        cellSize: DEFAULT_CELL_SIZE,
+        colors: [],
         selectedColor: '#f97316',
-        tool:          'pencil',
-        skinTone:      'light',
-        isDrawing:     false,
+        tool: 'pencil',
+        skinTone: 'light',
+        isDrawing: false,
         startCellIndex: null,
         previewIndices: [],
-        history:       [],
-        historyIndex:  -1,
-        maxHistory:    30,
+        history: [],
+        historyIndex: -1,
+        maxHistory: 30,
     };
 
     // ─────────────────────────────────────────────
     // DOM
     // ─────────────────────────────────────────────
     const els = {
-        grid:              document.getElementById('grid-canvas'),
-        canvasArea:        document.getElementById('canvas-area'),
-        palette:           document.getElementById('palette-grid'),
-        threadGuide:       document.getElementById('thread-guide'),
-        inputZoom:         document.getElementById('input-zoom'),
-        btnZoomIn:         document.getElementById('btn-zoom-in'),
-        btnZoomOut:        document.getElementById('btn-zoom-out'),
-        toolPencil:        document.getElementById('tool-pencil'),
-        toolEraser:        document.getElementById('tool-eraser'),
-        toolBucket:        document.getElementById('tool-bucket'),
-        toolLine:          document.getElementById('tool-line'),
-        toolSquare:        document.getElementById('tool-square'),
-        toolCircle:        document.getElementById('tool-circle'),
-        btnUndo:           document.getElementById('btn-undo'),
-        btnRedo:           document.getElementById('btn-redo'),
-        btnMirror:         document.getElementById('action-mirror'),
-        btnRotateLeft:     document.getElementById('action-rotate-left'),
-        btnRotateRight:    document.getElementById('action-rotate-right'),
-        btnClear:          document.getElementById('btn-clear'),
-        btnPrint:          document.getElementById('btn-print'),
-        btnPdf:            document.getElementById('btn-pdf'),
-        btnSavePng:        document.getElementById('btn-save-png'),
-        clearModal:        document.getElementById('clear-modal'),
-        btnCancelClear:    document.getElementById('btn-cancel-clear'),
-        btnConfirmClear:   document.getElementById('btn-confirm-clear'),
-        btnToggleMais:     document.getElementById('btn-toggle-mais'),
-        maisContent:       document.getElementById('mais-content'),
-        maisOverlay:       document.getElementById('mais-overlay'),
-        currentColorSwatch:document.getElementById('current-color-swatch'),
-        btnDonation:       document.getElementById('btn-donation'),
-        donationModal:     document.getElementById('donation-modal'),
-        btnCloseDonation:  document.getElementById('btn-close-donation'),
-        btnCopyPix:        document.getElementById('btn-copy-pix'),
+        grid: document.getElementById('grid-canvas'),
+        canvasArea: document.getElementById('canvas-area'),
+        palette: document.getElementById('palette-grid'),
+        threadGuide: document.getElementById('thread-guide'),
+        inputZoom: document.getElementById('input-zoom'),
+        btnZoomIn: document.getElementById('btn-zoom-in'),
+        btnZoomOut: document.getElementById('btn-zoom-out'),
+        toolPencil: document.getElementById('tool-pencil'),
+        toolEraser: document.getElementById('tool-eraser'),
+        toolBucket: document.getElementById('tool-bucket'),
+        toolLine: document.getElementById('tool-line'),
+        toolSquare: document.getElementById('tool-square'),
+        toolCircle: document.getElementById('tool-circle'),
+        btnUndo: document.getElementById('btn-undo'),
+        btnRedo: document.getElementById('btn-redo'),
+        btnMirror: document.getElementById('action-mirror'),
+        btnRotateLeft: document.getElementById('action-rotate-left'),
+        btnRotateRight: document.getElementById('action-rotate-right'),
+        btnClear: document.getElementById('btn-clear'),
+        btnPrint: document.getElementById('btn-print'),
+        btnPdf: document.getElementById('btn-pdf'),
+        btnSavePng: document.getElementById('btn-save-png'),
+        btnImportImage: document.getElementById('btn-import-image'),
+        inputImage: document.getElementById('input-image'),
+        clearModal: document.getElementById('clear-modal'),
+        btnCancelClear: document.getElementById('btn-cancel-clear'),
+        btnConfirmClear: document.getElementById('btn-confirm-clear'),
+        btnToggleMais: document.getElementById('btn-toggle-mais'),
+        maisContent: document.getElementById('mais-content'),
+        maisOverlay: document.getElementById('mais-overlay'),
+        currentColorSwatch: document.getElementById('current-color-swatch'),
+        btnDonation: document.getElementById('btn-donation'),
+        donationModal: document.getElementById('donation-modal'),
+        btnCloseDonation: document.getElementById('btn-close-donation'),
+        platformBanner: document.getElementById('platform-banner'),
     };
+    const maisHandle = els.maisContent?.querySelector('.bottom-sheet-handle');
 
     const ALL_TOOL_BTNS = [
         els.toolPencil, els.toolEraser, els.toolBucket,
@@ -79,6 +99,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const SHAPE_TOOLS = new Set(['line', 'square', 'circle']);
 
+    function renderPlatformBanner() {
+        if (!els.platformBanner) return;
+        if (platform.isAndroidApp) {
+            els.platformBanner.textContent = 'A conversao de imagem em padrao de missangas ficara disponivel na versao web do site.';
+            els.platformBanner.classList.remove('hidden');
+            return;
+        }
+        els.platformBanner.classList.add('hidden');
+        els.platformBanner.textContent = '';
+    }
+
     // ─────────────────────────────────────────────
     // GRADE & COLUNAS
     // ─────────────────────────────────────────────
@@ -86,8 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const threadW = els.threadGuide.offsetWidth || 30;
         // Desconta padding da canvas-area, canvas-wrapper, borda e gap interno
         const available = els.canvasArea.clientWidth - threadW - 72;
-        const beadStep  = state.cellSize + 3;
-        const newCols   = Math.max(8, Math.floor(available / beadStep));
+        const beadStep = state.cellSize + 3;
+        const newCols = Math.max(8, Math.floor(available / beadStep));
 
         if (newCols === state.cols && state.colors.length > 0) return;
 
@@ -110,13 +141,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderGrid() {
         const { cellSize, cols, rows, colors } = state;
         els.grid.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
-        els.grid.style.gridTemplateRows    = `repeat(${rows}, ${cellSize}px)`;
+        els.grid.style.gridTemplateRows = `repeat(${rows}, ${cellSize}px)`;
 
         const frag = document.createDocumentFragment();
         for (let i = 0; i < colors.length; i++) {
             const cell = document.createElement('div');
             cell.className = 'cell';
-            cell.style.width  = `${cellSize}px`;
+            cell.style.width = `${cellSize}px`;
             cell.style.height = `${cellSize}px`;
             cell.style.backgroundColor = colors[i];
             cell.dataset.index = i;
@@ -147,9 +178,9 @@ document.addEventListener('DOMContentLoaded', () => {
         els.inputZoom.value = state.cellSize;
         const { cellSize, cols, rows } = state;
         els.grid.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
-        els.grid.style.gridTemplateRows    = `repeat(${rows}, ${cellSize}px)`;
+        els.grid.style.gridTemplateRows = `repeat(${rows}, ${cellSize}px)`;
         for (const cell of els.grid.children) {
-            cell.style.width  = `${cellSize}px`;
+            cell.style.width = `${cellSize}px`;
             cell.style.height = `${cellSize}px`;
         }
         renderThreadGuide();
@@ -211,6 +242,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     els.maisOverlay.addEventListener('click', closeMais);
+    if (maisHandle) maisHandle.addEventListener('click', closeMais);
+    document.addEventListener('mousedown', (event) => {
+        if (!els.maisContent.classList.contains('open')) return;
+        if (els.maisContent.contains(event.target)) return;
+        if (els.btnToggleMais.contains(event.target)) return;
+        closeMais();
+    });
 
     // ─────────────────────────────────────────────
     // FERRAMENTAS
@@ -240,9 +278,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const cell = els.grid.children[idx];
             if (cell) cell.style.backgroundColor = replacementColor;
             const x = idx % cols, y = Math.floor(idx / cols);
-            if (y > 0)        queue.push(idx - cols);
+            if (y > 0) queue.push(idx - cols);
             if (y < rows - 1) queue.push(idx + cols);
-            if (x > 0)        queue.push(idx - 1);
+            if (x > 0) queue.push(idx - 1);
             if (x < cols - 1) queue.push(idx + 1);
         }
         saveHistory();
@@ -261,10 +299,82 @@ document.addEventListener('DOMContentLoaded', () => {
         if (els.maisContent.classList.contains('open')) closeMais();
     }
 
+    function processImageToPattern(img) {
+        const offscreen = document.createElement('canvas');
+        offscreen.width = state.cols;
+        offscreen.height = state.rows;
+        const ctx = offscreen.getContext('2d', { willReadFrequently: true });
+        if (!ctx) {
+            alert('Nao foi possivel processar a imagem neste navegador.');
+            return;
+        }
+
+        const gridRatio = state.cols / state.rows;
+        const imgRatio = img.width / img.height;
+        let drawWidth;
+        let drawHeight;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        if (imgRatio > gridRatio) {
+            drawWidth = state.cols;
+            drawHeight = drawWidth / imgRatio;
+            offsetY = (state.rows - drawHeight) / 2;
+        } else {
+            drawHeight = state.rows;
+            drawWidth = drawHeight * imgRatio;
+            offsetX = (state.cols - drawWidth) / 2;
+        }
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, state.cols, state.rows);
+        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+
+        const imageData = ctx.getImageData(0, 0, state.cols, state.rows);
+        const { data } = imageData;
+        const paletteRGB = PRESET_COLORS.map((hex) => {
+            const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return {
+                hex,
+                r: parseInt(match[1], 16),
+                g: parseInt(match[2], 16),
+                b: parseInt(match[3], 16),
+            };
+        });
+
+        const nextColors = new Array(state.rows * state.cols).fill('#ffffff');
+        for (let i = 0; i < data.length; i += 4) {
+            if (data[i + 3] < 128) continue;
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            let closestHex = '#ffffff';
+            let minDistance = Infinity;
+
+            for (const paletteColor of paletteRGB) {
+                const distance =
+                    ((r - paletteColor.r) ** 2) +
+                    ((g - paletteColor.g) ** 2) +
+                    ((b - paletteColor.b) ** 2);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestHex = paletteColor.hex;
+                }
+            }
+
+            nextColors[i / 4] = closestHex;
+        }
+
+        state.colors = nextColors;
+        renderGrid();
+        saveHistory();
+        saveLocalState();
+    }
+
     // ─────────────────────────────────────────────
     // FERRAMENTAS DE FORMA (Reta / Quadrado / Círculo)
     // ─────────────────────────────────────────────
-    function idxToXY(idx)  { return { x: idx % state.cols, y: Math.floor(idx / state.cols) }; }
+    function idxToXY(idx) { return { x: idx % state.cols, y: Math.floor(idx / state.cols) }; }
     function xyToIdx(x, y) {
         if (x < 0 || x >= state.cols || y < 0 || y >= state.rows) return -1;
         return y * state.cols + x;
@@ -276,12 +386,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let dx = Math.abs(b.x - a.x), dy = Math.abs(b.y - a.y);
         let sx = a.x < b.x ? 1 : -1, sy = a.y < b.y ? 1 : -1;
         let err = dx - dy, x = a.x, y = a.y;
-        for (;;) {
+        for (; ;) {
             const i = xyToIdx(x, y); if (i >= 0) out.push(i);
             if (x === b.x && y === b.y) break;
             const e2 = 2 * err;
             if (e2 > -dy) { err -= dy; x += sx; }
-            if (e2 <  dx) { err += dx; y += sy; }
+            if (e2 < dx) { err += dx; y += sy; }
         }
         return out;
     }
@@ -292,30 +402,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const y0 = Math.min(a.y, b.y), y1 = Math.max(a.y, b.y);
         const set = new Set();
         for (let x = x0; x <= x1; x++) {
-            [xyToIdx(x,y0), xyToIdx(x,y1)].forEach(i => i >= 0 && set.add(i));
+            [xyToIdx(x, y0), xyToIdx(x, y1)].forEach(i => i >= 0 && set.add(i));
         }
-        for (let y = y0+1; y < y1; y++) {
-            [xyToIdx(x0,y), xyToIdx(x1,y)].forEach(i => i >= 0 && set.add(i));
+        for (let y = y0 + 1; y < y1; y++) {
+            [xyToIdx(x0, y), xyToIdx(x1, y)].forEach(i => i >= 0 && set.add(i));
         }
         return [...set];
     }
 
     function getCircleIndices(s, e) {
         const a = idxToXY(s), b = idxToXY(e);
-        const cx = (a.x+b.x)/2, cy = (a.y+b.y)/2;
-        const rx = Math.abs(b.x-a.x)/2, ry = Math.abs(b.y-a.y)/2;
-        const steps = Math.max(60, Math.ceil(2*Math.PI*Math.max(rx,ry)));
+        const cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
+        const rx = Math.abs(b.x - a.x) / 2, ry = Math.abs(b.y - a.y) / 2;
+        const steps = Math.max(60, Math.ceil(2 * Math.PI * Math.max(rx, ry)));
         const set = new Set();
         for (let i = 0; i <= steps; i++) {
-            const t = (2*Math.PI*i)/steps;
-            const idx = xyToIdx(Math.round(cx+rx*Math.cos(t)), Math.round(cy+ry*Math.sin(t)));
+            const t = (2 * Math.PI * i) / steps;
+            const idx = xyToIdx(Math.round(cx + rx * Math.cos(t)), Math.round(cy + ry * Math.sin(t)));
             if (idx >= 0) set.add(idx);
         }
         return [...set];
     }
 
     function getShapeIndices(start, end) {
-        if (state.tool === 'line')   return getLineIndices(start, end);
+        if (state.tool === 'line') return getLineIndices(start, end);
         if (state.tool === 'square') return getSquareIndices(start, end);
         if (state.tool === 'circle') return getCircleIndices(start, end);
         return [];
@@ -355,8 +465,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function mirrorGrid() {
         const { rows, cols } = state;
         for (let y = 0; y < rows; y++)
-            for (let x = 0; x < Math.floor(cols/2); x++) {
-                const a = y*cols+x, b = y*cols+(cols-1-x);
+            for (let x = 0; x < Math.floor(cols / 2); x++) {
+                const a = y * cols + x, b = y * cols + (cols - 1 - x);
                 [state.colors[a], state.colors[b]] = [state.colors[b], state.colors[a]];
             }
         renderGrid(); saveHistory();
@@ -364,13 +474,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function rotateGrid(dir) {
         const { rows, cols } = state;
-        const next = new Array(rows*cols).fill('#ffffff');
+        const next = new Array(rows * cols).fill('#ffffff');
         for (let y = 0; y < rows; y++)
             for (let x = 0; x < cols; x++) {
-                const nx = dir === 'cw' ? rows-1-y : y;
-                const ny = dir === 'cw' ? x         : cols-1-x;
+                const nx = dir === 'cw' ? rows - 1 - y : y;
+                const ny = dir === 'cw' ? x : cols - 1 - x;
                 if (nx >= 0 && nx < cols && ny >= 0 && ny < rows)
-                    next[ny*cols+nx] = state.colors[y*cols+x];
+                    next[ny * cols + nx] = state.colors[y * cols + x];
             }
         state.colors = next;
         renderGrid(); saveHistory();
@@ -392,7 +502,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const h = state.history[state.historyIndex];
         if (!h) return;
         state.colors = [...h.colors];
-        state.cols   = h.cols;
+        state.cols = h.cols;
         renderGrid(); updateUndoRedo(); saveLocalState();
     }
 
@@ -411,7 +521,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 colors: state.colors, selectedColor: state.selectedColor,
                 skinTone: state.skinTone,
             }));
-        } catch (_) {}
+        } catch (_) { }
     }
 
     function loadLocalState() {
@@ -420,9 +530,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!raw) return false;
             const data = JSON.parse(raw);
             if (!Array.isArray(data.colors) || !data.cols) return false;
-            state.cols          = data.cols;
-            state.cellSize      = data.cellSize || DEFAULT_CELL_SIZE;
-            state.colors        = data.colors;
+            state.cols = data.cols;
+            state.cellSize = data.cellSize || DEFAULT_CELL_SIZE;
+            state.colors = data.colors;
             state.selectedColor = data.selectedColor || '#f97316';
             els.inputZoom.value = state.cellSize;
             if (data.skinTone && SKIN_TONES[data.skinTone]) {
@@ -453,14 +563,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     useCORS: true, logging: false,
                 });
                 const imgData = canvas.toDataURL('image/png');
-                const pdf  = new JsPDF('l', 'mm', 'a4');
-                const pW   = pdf.internal.pageSize.getWidth();
-                const pH   = pdf.internal.pageSize.getHeight();
-                const ratio= Math.min((pW-20)/canvas.width, (pH-30)/canvas.height);
-                const iW   = canvas.width*ratio, iH = canvas.height*ratio;
+                const pdf = new JsPDF('l', 'mm', 'a4');
+                const pW = pdf.internal.pageSize.getWidth();
+                const pH = pdf.internal.pageSize.getHeight();
+                const ratio = Math.min((pW - 20) / canvas.width, (pH - 30) / canvas.height);
+                const iW = canvas.width * ratio, iH = canvas.height * ratio;
                 pdf.setFontSize(13);
-                pdf.text('Missangas Jane — Padrão de Pulseira', pW/2, 11, { align: 'center' });
-                pdf.addImage(imgData, 'PNG', (pW-iW)/2, 18, iW, iH);
+                pdf.text('Missangas Jane — Padrão de Pulseira', pW / 2, 11, { align: 'center' });
+                pdf.addImage(imgData, 'PNG', (pW - iW) / 2, 18, iW, iH);
                 pdf.save('missangas-jane.pdf');
             } catch (err) {
                 alert('Erro ao gerar PDF: ' + err.message);
@@ -590,13 +700,13 @@ document.addEventListener('DOMContentLoaded', () => {
     els.toolPencil.addEventListener('click', () => setTool('pencil'));
     els.toolEraser.addEventListener('click', () => setTool('eraser'));
     els.toolBucket.addEventListener('click', () => setTool('bucket'));
-    if (els.toolLine)   els.toolLine.addEventListener('click',   () => setTool('line'));
+    if (els.toolLine) els.toolLine.addEventListener('click', () => setTool('line'));
     if (els.toolSquare) els.toolSquare.addEventListener('click', () => setTool('square'));
     if (els.toolCircle) els.toolCircle.addEventListener('click', () => setTool('circle'));
 
-    els.btnZoomIn.addEventListener('click',  () => applyZoom(state.cellSize + 4));
+    els.btnZoomIn.addEventListener('click', () => applyZoom(state.cellSize + 4));
     els.btnZoomOut.addEventListener('click', () => applyZoom(state.cellSize - 4));
-    els.inputZoom.addEventListener('input',  e  => applyZoom(parseInt(e.target.value)));
+    els.inputZoom.addEventListener('input', e => applyZoom(parseInt(e.target.value)));
 
     els.btnUndo.addEventListener('click', () => {
         if (state.historyIndex > 0) { state.historyIndex--; restoreHistory(); }
@@ -605,12 +715,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.historyIndex < state.history.length - 1) { state.historyIndex++; restoreHistory(); }
     });
 
-    if (els.btnMirror)      els.btnMirror.addEventListener('click',      mirrorGrid);
-    if (els.btnRotateLeft)  els.btnRotateLeft.addEventListener('click',  () => rotateGrid('ccw'));
+    if (els.btnMirror) els.btnMirror.addEventListener('click', mirrorGrid);
+    if (els.btnRotateLeft) els.btnRotateLeft.addEventListener('click', () => rotateGrid('ccw'));
     if (els.btnRotateRight) els.btnRotateRight.addEventListener('click', () => rotateGrid('cw'));
 
     els.btnClear.addEventListener('click', () => els.clearModal.classList.remove('hidden'));
-    els.btnCancelClear.addEventListener('click',  () => els.clearModal.classList.add('hidden'));
+    els.btnCancelClear.addEventListener('click', () => els.clearModal.classList.add('hidden'));
     els.btnConfirmClear.addEventListener('click', () => {
         state.colors.fill('#ffffff');
         renderGrid(); saveHistory();
@@ -618,8 +728,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Doação
-    els.btnDonation.addEventListener('click',      () => els.donationModal.classList.remove('hidden'));
+    els.btnDonation.addEventListener('click', () => els.donationModal.classList.remove('hidden'));
     els.btnCloseDonation.addEventListener('click', () => els.donationModal.classList.add('hidden'));
+
+    if (platform.kind === 'web' && els.btnImportImage && els.inputImage) {
+        els.btnImportImage.addEventListener('click', () => els.inputImage.click());
+        els.inputImage.addEventListener('change', (event) => {
+            const [file] = event.target.files || [];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (loadEvent) => {
+                const img = new Image();
+                img.onload = () => processImageToPattern(img);
+                img.src = loadEvent.target.result;
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+            if (els.maisContent.classList.contains('open')) closeMais();
+        });
+    }
 
     // Copiar Pix (com fallback para WebView Android antigo)
     if (els.btnCopyPix) {
@@ -644,7 +772,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
         document.body.appendChild(el);
         el.focus(); el.select();
-        try { document.execCommand('copy'); cb(); } catch (_) {}
+        try { document.execCommand('copy'); cb(); } catch (_) { }
         document.body.removeChild(el);
     }
 
@@ -690,6 +818,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ─────────────────────────────────────────────
+    // ANDROID BACK BUTTON (Capacitor)
+    // ─────────────────────────────────────────────
+    if (window.Capacitor && window.Capacitor.Plugins.App) {
+        const { App } = window.Capacitor.Plugins;
+        App.addListener('backButton', () => {
+            if (els.maisContent.classList.contains('open')) {
+                closeMais();
+            } else if (!els.clearModal.classList.contains('hidden')) {
+                els.clearModal.classList.add('hidden');
+            } else if (!els.donationModal.classList.contains('hidden')) {
+                els.donationModal.classList.add('hidden');
+            } else {
+                // Se nada estiver aberto, minimiza o app
+                App.exitApp();
+            }
+        });
+    }
+
+    // ─────────────────────────────────────────────
     // INICIALIZAÇÃO
     // ─────────────────────────────────────────────
     function init() {
@@ -698,6 +845,7 @@ document.addEventListener('DOMContentLoaded', () => {
             state.colors = new Array(state.rows * state.cols).fill('#ffffff');
 
         renderPalette();   // também chama updateColorSwatch
+        renderPlatformBanner();
         renderGrid();
         setTool('pencil');
         updateUndoRedo();

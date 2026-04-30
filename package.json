@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@capacitor/android": "^8.2.0",
+    "@capacitor/app": "^8.2.0",
     "@capacitor/cli": "^8.2.0",
     "@capacitor/core": "^8.2.0",
     "agent-base": "^7.1.4",
@@ -42,15 +43,17 @@
     "xmlchars": "^2.2.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sync": "cap sync",
+    "open:android": "cap open android"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/JRCPacheco/missangas.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Seu Nome ou Empresa",
+  "license": "MIT",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/JRCPacheco/missangas/issues"

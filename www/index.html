@@ -20,12 +20,16 @@
 <body>
     <div class="app-wrapper">
 
-        <!-- ══ HEADER ══════════════════════════════════════════ -->
         <header class="main-header">
             <div class="logo-area">
                 <img src="assets/icon.png" alt="Missangas Jane" class="logo-img">
                 <span class="logo-title">Missangas Jane</span>
             </div>
+            <a href="https://cidesign.net.br/" class="home-link" aria-label="Voltar para a home do site"
+                data-platform-target="web">
+                <i data-lucide="arrow-left"></i>
+                <span>Voltar para home</span>
+            </a>
             <div class="header-actions">
                 <button id="btn-undo" class="icon-btn" title="Desfazer" aria-label="Desfazer">
                     <i data-lucide="undo-2"></i>
@@ -47,11 +51,10 @@
             </div>
         </header>
 
-        <div class="content-layout">
+        <div class="platform-banner hidden" id="platform-banner" aria-live="polite"></div>
 
-            <!-- ══ CANVAS ══════════════════════════════════════ -->
+        <div class="content-layout">
             <main class="canvas-area" id="canvas-area">
-                <!-- Controles: tom de pele + zoom (sempre visíveis) -->
                 <div class="canvas-controls">
                     <div class="skin-selector" aria-label="Tom de pele do fundo">
                         <button class="skin-btn active" data-skin="light" title="Tom claro"
@@ -78,17 +81,14 @@
                 </div>
             </main>
 
-            <!-- ══ SIDEBAR: CORES ══════════════════════════════ -->
             <aside class="sidebar colors-sidebar">
                 <div class="card colors-card">
                     <h2 class="card-label">Cores</h2>
                     <div class="palette-grid" id="palette-grid"></div>
                 </div>
             </aside>
+        </div>
 
-        </div><!-- /content-layout -->
-
-        <!-- ══ BARRA DE FERRAMENTAS (rodapé) ══════════════════ -->
         <div class="bottom-toolbar">
             <button id="tool-pencil" class="tool-btn active" aria-label="Lápis — desenhar">
                 <i data-lucide="pencil"></i>
@@ -114,13 +114,11 @@
                 <span>Apagar</span>
             </button>
         </div>
+    </div>
 
-    </div><!-- /app-wrapper -->
-
-    <!-- ══ BOTTOM SHEET: Mais Ferramentas ══════════════════════ -->
     <div class="bottom-sheet-overlay hidden" id="mais-overlay"></div>
     <div class="bottom-sheet hidden" id="mais-content" role="dialog" aria-modal="true" aria-label="Mais ferramentas">
-        <div class="bottom-sheet-handle"></div>
+        <button type="button" class="bottom-sheet-handle" aria-label="Fechar mais ferramentas"></button>
         <p class="bottom-sheet-title">Mais Ferramentas</p>
         <div class="bottom-sheet-tools">
             <button id="tool-line" class="tool-btn tool-btn--sm" aria-label="Reta">
@@ -141,10 +139,14 @@
             <button id="action-rotate-right" class="tool-btn tool-btn--sm" aria-label="Girar à direita">
                 <i data-lucide="rotate-cw"></i><span>Girar →</span>
             </button>
+            <button id="btn-import-image" class="tool-btn tool-btn--sm tool-btn--wide" aria-label="Importar imagem"
+                data-platform-target="web">
+                <i data-lucide="image"></i><span>Importar Imagem</span>
+            </button>
         </div>
+        <input type="file" id="input-image" accept="image/*" class="hidden" data-platform-target="web">
     </div>
 
-    <!-- ══ MODAL: Confirmar limpeza ═══════════════════════════ -->
     <div class="modal-overlay hidden" id="clear-modal" role="dialog" aria-modal="true"
         aria-labelledby="clear-modal-title">
         <div class="modal-box">
@@ -160,12 +162,10 @@
         </div>
     </div>
 
-    <!-- ══ BOTÃO FLUTUANTE PIX ════════════════════════════════ -->
     <button id="btn-donation" class="floating-btn" aria-label="Apoiar o projeto via Pix" title="Apoiar com Pix">
         <i data-lucide="heart"></i>
     </button>
 
-    <!-- ══ MODAL: Doação ══════════════════════════════════════ -->
     <div class="modal-overlay hidden" id="donation-modal" role="dialog" aria-modal="true">
         <div class="modal-box">
             <img src="assets/coffee.png" alt="Apoie o projeto Missangas Jane" style="width:100%;border-radius:14px;">
